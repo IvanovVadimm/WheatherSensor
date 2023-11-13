@@ -1,0 +1,21 @@
+Project goal: Develop a system for collecting and processing weather data.
+The system consists of two parts: a RESTful API service for filtering and
+sorting weather data (hereinafter referred to as the “server”), as well as at least one service,
+providing weather data (hereinafter referred to as “sensor”).
+The sensor is an application that can register itself
+on server. Then, at certain intervals, the sensor reports
+weather data to the server. The server receives data from the sensor and stores it in
+DB. The client can receive data from the server about available sensors and measurements
+weather.
+
+Available endpoints
+POST endpoints:
+http://localhost:8080/sensors/registration - Registering the sensor on the server
+http://localhost:8080/sensors/{key}/measurements - Weather Data Logging
+{key} - unique sensor key
+
+GET endpoints:
+http://localhost:8080/sensors - Retrieving all active sensors
+http://localhost:8080/sensors/{key}/measurements - Retrieving the last 20 sensor measurements
+http://localhost:8080/sensors/measurements - Request to receive up-to-date information from all sensors.
+Measurements whose time does not differ from request time for more than one minute.
