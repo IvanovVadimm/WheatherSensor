@@ -1,0 +1,38 @@
+create sequence data_of_weather_id_seq;
+
+alter sequence data_of_weather_id_seq owner to postgres;
+
+create sequence sensor_table_id_seq;
+
+alter sequence sensor_table_id_seq owner to postgres;
+
+create table if not exists sensor_table
+(
+    sensor_is_activated boolean,
+    id                  bigint not null
+        primary key,
+    sensor_key          varchar(255),
+    sensor_name         varchar(255)
+);
+
+alter table sensor_table
+    owner to postgres;
+
+create table if not exists data_of_weather
+(
+    day_month_year_of_measurement date,
+    is_raining                    boolean,
+    time_of_measurement           time(6),
+    value_of_data                 double precision,
+    date_of_measurement           timestamp(6),
+    id                            bigint not null
+        primary key,
+    sensor_id                     bigint
+        constraint fk4h81hohxtb6yq5pcjos5khftu
+            references sensor_table,
+    time_in_milliseconds          bigint
+);
+
+alter table data_of_weather
+    owner to postgres;
+

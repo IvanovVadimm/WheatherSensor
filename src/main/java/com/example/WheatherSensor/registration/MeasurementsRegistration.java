@@ -11,14 +11,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 public class MeasurementsRegistration {
-    private Double value;
-    private Boolean isRaining;
+    private double value;
+    private boolean isRaining;
 
-    public Double getValue() {
+    public void setValue(double value) {
+        this.value = value;
+    }
+
+    public void setIsRaining(boolean raining) {
+        this.isRaining = raining;
+    }
+
+    public double getValue() {
         return value;
     }
 
-    public Boolean getIsRaining() {
+    public boolean getIsRaining() {
         return isRaining;
     }
 }

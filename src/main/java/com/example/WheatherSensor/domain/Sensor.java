@@ -36,6 +36,7 @@ public class Sensor {
     @JsonIgnore
     @Column(name = "sensor_is_activated")
     private boolean activated;
+    @JsonIgnore
     @OneToMany(mappedBy = "sensor")
     private Set<DataOfMeasurement> dataOfMeasurementSet;
 }

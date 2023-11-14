@@ -41,11 +41,11 @@ public class DataOfMeasurement {
     private Date dateOfMeasurement;
     @Column(name = "time_of_measurement")
     private LocalTime timeOfMeasurement;
-    @Column(name = "date_of_measurement")
     @JsonIgnore
-    private Timestamp fullTimeOfMeasurement;
+    @Column(name = "time_in_milliseconds")
+    private long timeInMilliseconds;
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "sensor_id", insertable = false, updatable = false)
+    @JoinColumn(name = "sensor_id",insertable = false, updatable = false)
     private Sensor sensor;
 }

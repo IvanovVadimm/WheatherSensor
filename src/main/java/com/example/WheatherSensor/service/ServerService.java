@@ -5,6 +5,9 @@ import com.example.WheatherSensor.domain.Sensor;
 import com.example.WheatherSensor.exceptions.sensorsException.SensorIsNotExistWithThatKeyExc;
 import com.example.WheatherSensor.repository.IDataOfMeasuringRepository;
 import com.example.WheatherSensor.repository.ISensorRepository;
+import com.example.WheatherSensor.utilsInterfaces.ISensorService;
+import com.example.WheatherSensor.utilsInterfaces.ISetSensorInInactiveConditionByExpireLastRecording;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,17 +20,18 @@ import java.util.stream.Collectors;
  **/
 @Service
 public class ServerService {
-    private final int MINUTE_TO_MILLISECONDS = 60_000;
     private final long COUNT_LATEST_RECORDING = 20;
     private final ISensorRepository iSensorRepository;
     private final IDataOfMeasuringRepository iDataOfMeasuringRepository;
-    private final SensorService sensorService;
+    private final ISetSensorInInactiveConditionByExpireLastRecording iSetSensorInInactiveConditionByExpireLastRecording;
+    private final ISensorService iSensorService;
 
     @Autowired
-    public ServerService(ISensorRepository iSensorRepository, IDataOfMeasuringRepository iDataOfMeasuringRepository, SensorService sensorService) {
+    public ServerService(ISensorRepository iSensorRepository, IDataOfMeasuringRepository iDataOfMeasuringRepository, ISetSensorInInactiveConditionByExpireLastRecording iSetSensorInInactiveConditionByExpireLastRecording, SensorService sensorService) {
         this.iSensorRepository = iSensorRepository;
         this.iDataOfMeasuringRepository = iDataOfMeasuringRepository;
-        this.sensorService = sensorService;
+        this.iSetSensorInInactiveConditionByExpireLastRecording = iSetSensorInInactiveConditionByExpireLastRecording;
+        this.iSensorService = sensorService;
     }
 
     public List<Sensor> getAllActiveSensors() {
@@ -35,13 +39,13 @@ public class ServerService {
     }
 
     public List<DataOfMeasurement> getAllTheMostLatestMeasurementBySensorKey(String key) throws SensorIsNotExistWithThatKeyExc {
-        Sensor sensor = sensorService.getSensorByKey(key);
+        Sensor sensor = iSensorService.getSensorByKey(key);
         return iDataOfMeasuringRepository.findTheMostLatest20BySensorId(sensor.getId(), COUNT_LATEST_RECORDING);
     }
 
     public List<DataOfMeasurement> getActuallyInformationAboutAllMeasurements() {
         java.sql.Date actualDate = new java.sql.Date(new Date().getTime());
         List<DataOfMeasurement> actualMeasurementList = iDataOfMeasuringRepository.findDataOfMeasurementByDateOfMeasurementEquals(actualDate);
-        return actualMeasurementList.stream().filter(dataOfMeasurement -> (actualDate.getTime() - dataOfMeasurement.getFullTimeOfMeasurement().getTime()) <= MINUTE_TO_MILLISECONDS).collect(Collectors.toList());
+        return actualMeasurementList.stream().filter(actualMeasurement -> (!iSetSensorInInactiveConditionByExpireLastRecording.timeIsExpired(actualMeasurement))).collect(Collectors.toList());
     }
 }

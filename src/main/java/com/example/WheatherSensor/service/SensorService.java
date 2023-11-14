@@ -14,13 +14,14 @@ import com.example.WheatherSensor.utilsInterfaces.IMakeUUID;
 import com.example.WheatherSensor.domain.Sensor;
 import com.example.WheatherSensor.registration.SensorRegistration;
 import com.example.WheatherSensor.repository.ISensorRepository;
+import com.example.WheatherSensor.utilsInterfaces.ISensorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,7 +30,7 @@ import java.util.UUID;
  * A class describing the operation of the sensor on the service layer
  **/
 @Service
-public class SensorService {
+public class SensorService implements ISensorService {
     private final IFilterForNameOfSensor iFilterForNameOfSensor;
     private final ISensorRepository iSensorRepository;
     private final IMakeUUID iMakeUUID;
@@ -55,19 +56,20 @@ public class SensorService {
         sensor.setName(sensorRegistration.getName());
         UUID uuid = iMakeUUID.makeUUID();
         sensor.setKey(String.valueOf(uuid));
+        sensor.setActivated(true);
         iSensorRepository.save(sensor);
         return String.valueOf(uuid);
     }
 
     @Transactional
-    public boolean makeMeasurements(String key, MeasurementsRegistration measurementsRegistration) throws SensorIsNotExistWithThatKeyExc, MeasurementValueValidDataExceptions, MeasurementIsRainingValidDataExceptions {
+    public boolean makeMeasurements(String key, MeasurementsRegistration measurementsRegistration) throws MeasurementValueValidDataExceptions, MeasurementIsRainingValidDataExceptions, SensorIsNotExistWithThatKeyExc {
         Sensor sensor = getSensorByKey(key);
         Double valueData = measurementsRegistration.getValue();
         Boolean isRaining = measurementsRegistration.getIsRaining();
         if ((!iCheckMeasurementsValueOnValidData.rightValueOfMeasurement(valueData))) {
             throw new MeasurementValueValidDataExceptions();
         }
-        if ((!iCheckMeasurementsValueOnValidData.rightValueOfMeasurement(valueData)) || (!iCheckMeasurementsIsRainingOnValidData.rightIsRainingOfMeasurement(isRaining))) {
+        if ((!iCheckMeasurementsIsRainingOnValidData.rightIsRainingOfMeasurement(isRaining))) {
             throw new MeasurementIsRainingValidDataExceptions();
         }
         long sensorId = sensor.getId();
@@ -76,10 +78,12 @@ public class SensorService {
         dataOfMeasurement.setValueOfData(measurementsRegistration.getValue());
         dataOfMeasurement.setRaining(measurementsRegistration.getIsRaining());
         dataOfMeasurement.setDateOfMeasurement(new Date(new java.util.Date().getTime()));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         LocalTime measurementHoldTime = LocalTime.now();
-        Timestamp fullTimeOfMeasurement = Timestamp.valueOf(LocalDateTime.now());
+        Timestamp fullTimeOfMeasurement = Timestamp.valueOf(simpleDateFormat.format(new java.util.Date()));
+        dataOfMeasurement.setTimeInMilliseconds(fullTimeOfMeasurement.getTime());
         dataOfMeasurement.setTimeOfMeasurement(measurementHoldTime);
-        dataOfMeasurement.setFullTimeOfMeasurement(fullTimeOfMeasurement);
+        dataOfMeasurement.setTimeInMilliseconds(fullTimeOfMeasurement.getTime());
         iDataOfMeasuringRepository.save(dataOfMeasurement);
         iSensorRepository.makeSensorIsActivated(sensorId);
         return iDataOfMeasuringRepository.existsByTimeOfMeasurement(measurementHoldTime);

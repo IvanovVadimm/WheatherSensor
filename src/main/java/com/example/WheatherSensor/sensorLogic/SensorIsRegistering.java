@@ -1,6 +1,8 @@
+
 package com.example.WheatherSensor.sensorLogic;
 
 import com.example.WheatherSensor.registration.SensorRegistration;
+import com.example.WheatherSensor.utilsInterfaces.ISensorIsRegistering;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,22 +18,23 @@ import java.net.URL;
 /**
  * A class that simulates the operation of a sensor when registering on a server and sending a request to the server for a specific
  **/
+
 @Component
-public class SensorIsRegistering {
+public class SensorIsRegistering implements ISensorIsRegistering {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private String uuid = "";
-    private final String urlAdress = "http://localhost:8080/sensors/registration";
+    private final String urlAddress = "http://localhost:8080/sensors/registration";
 
     public String getUuid() {
         return this.uuid;
     }
 
     @Scheduled(initialDelay = 1000L, fixedDelay = 60_000L)
-    public void voice() throws IOException {
+    public void autoRegistrationSensorOnAServer() throws IOException {
         SensorRegistration sensorRegistration = new SensorRegistration();
         sensorRegistration.setName("TestSensor");
         String body = "{\"name\": \"" + sensorRegistration.getName() + "\"}";
-        URL url = new URL(urlAdress);
+        URL url = new URL(urlAddress);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);

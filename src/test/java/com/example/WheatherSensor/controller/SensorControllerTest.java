@@ -58,7 +58,7 @@ public class SensorControllerTest {
         String requestJson = ow.writeValueAsString(sensorRegistration);
         MvcResult result = mockMvc.perform(post("/sensors/registration").contentType(APPLICATION_JSON)
                         .content(requestJson))
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andReturn();
         assertThat(result.getResponse().getContentAsString(), allOf(notNullValue()));
         verify(sensorService, times(1)).registrationOfSensor(any());
@@ -74,7 +74,7 @@ public class SensorControllerTest {
         String requestJson = ow.writeValueAsString(measurementsRegistration);
         MvcResult result = mockMvc.perform(post("/sensors/{key}/measurements", uuid).contentType(APPLICATION_JSON)
                         .content(requestJson))
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andReturn();
         assertThat(result.getResponse().getContentAsString(), allOf(notNullValue()));
         verify(sensorService, times(1)).makeMeasurements(uuid, measurementsRegistration);
