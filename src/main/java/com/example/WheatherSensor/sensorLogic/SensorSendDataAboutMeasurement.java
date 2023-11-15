@@ -57,7 +57,7 @@ public class SensorSendDataAboutMeasurement {
         }
         int responseCode = connection.getResponseCode();
         if (responseCode == 200) {
-            log.info("Sensor send measuring data on a server");
+            log.info("Sensor are sending measuring data on a server");
         } else {
             log.warn("Measurement data hasn't been sending on a server!");
         }

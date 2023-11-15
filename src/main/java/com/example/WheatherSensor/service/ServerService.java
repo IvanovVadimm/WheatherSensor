@@ -6,8 +6,8 @@ import com.example.WheatherSensor.exceptions.sensorsException.SensorIsNotExistWi
 import com.example.WheatherSensor.repository.IDataOfMeasuringRepository;
 import com.example.WheatherSensor.repository.ISensorRepository;
 import com.example.WheatherSensor.utilsInterfaces.ISensorService;
+import com.example.WheatherSensor.utilsInterfaces.IServerService;
 import com.example.WheatherSensor.utilsInterfaces.ISetSensorInInactiveConditionByExpireLastRecording;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * A class describing the operation of the server on the service layer
  **/
 @Service
-public class ServerService {
+public class ServerService implements IServerService {
     private final long COUNT_LATEST_RECORDING = 20;
     private final ISensorRepository iSensorRepository;
     private final IDataOfMeasuringRepository iDataOfMeasuringRepository;
@@ -46,6 +46,7 @@ public class ServerService {
     public List<DataOfMeasurement> getActuallyInformationAboutAllMeasurements() {
         java.sql.Date actualDate = new java.sql.Date(new Date().getTime());
         List<DataOfMeasurement> actualMeasurementList = iDataOfMeasuringRepository.findDataOfMeasurementByDateOfMeasurementEquals(actualDate);
-        return actualMeasurementList.stream().filter(actualMeasurement -> (!iSetSensorInInactiveConditionByExpireLastRecording.timeIsExpired(actualMeasurement))).collect(Collectors.toList());
+        List<DataOfMeasurement> list =  actualMeasurementList.stream().filter(actualMeasurement -> (!iSetSensorInInactiveConditionByExpireLastRecording.timeIsExpired(actualMeasurement))).collect(Collectors.toList());
+        return list;
     }
 }
