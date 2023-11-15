@@ -50,16 +50,15 @@ Application uses PostgreSQL database.
 
 Available endpoints 
 POST endpoints:
-http://localhost:8080/sensors/registration - Registering the sensor on the server.
-
-http://localhost:8080/sensors/{key}/measurements - Weather Data Logging
+* http://localhost:8080/sensors/registration - Registering the sensor on the server.
+* http://localhost:8080/sensors/{key}/measurements - Weather Data Logging
 {key} - unique sensor key which autogenerate for every sensor.
 
 GET endpoints:
-http://localhost:8080/sensors - Retrieving all active sensors
-http://localhost:8080/sensors/{key}/measurements - Retrieving the last 20 sensor measurements
+* http://localhost:8080/sensors - Retrieving all active sensors
+* http://localhost:8080/sensors/{key}/measurements - Retrieving the last 20 sensor measurements
 {key} - unique sensor key which autogenerate for every sensor.
-http://localhost:8080/sensors/measurements - Request to receive up-to-date information from all sensors.
+* http://localhost:8080/sensors/measurements - Request to receive up-to-date information from all sensors.
 Measurements whose time does not differ from request time for more than one minute.
 
 ***
