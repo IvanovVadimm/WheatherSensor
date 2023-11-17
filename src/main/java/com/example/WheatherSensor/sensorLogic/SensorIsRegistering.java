@@ -5,6 +5,7 @@ import com.example.WheatherSensor.registration.SensorRegistration;
 import com.example.WheatherSensor.utilsInterfaces.ISensorIsRegistering;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +24,14 @@ import java.net.URL;
 public class SensorIsRegistering implements ISensorIsRegistering {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private String uuid = "";
+
+    private final SensorRegistration sensorRegistration;
     private final String urlAddress = "http://localhost:8080/sensors/registration";
+
+    @Autowired
+    public SensorIsRegistering(SensorRegistration sensorRegistration) {
+        this.sensorRegistration = sensorRegistration;
+    }
 
     public String getUuid() {
         return this.uuid;
@@ -31,7 +39,6 @@ public class SensorIsRegistering implements ISensorIsRegistering {
 
     @Scheduled(initialDelay = 1000L, fixedDelay = 60_000L)
     public void autoRegistrationSensorOnAServer() throws IOException {
-        SensorRegistration sensorRegistration = new SensorRegistration();
         sensorRegistration.setName("TestSensor");
         String body = "{\"name\": \"" + sensorRegistration.getName() + "\"}";
         URL url = new URL(urlAddress);
@@ -47,7 +54,7 @@ public class SensorIsRegistering implements ISensorIsRegistering {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 uuid = line;
-                log.info("Registered sensor key: "+line);
+                log.info("Registered sensor key: " + line);
             }
         }
     }
